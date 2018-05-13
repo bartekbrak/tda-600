@@ -1,0 +1,33 @@
+# Build using node/yarn, serve using nginx
+#
+# Multi-level build allows us to minimize production container size and get rid
+# of unused dependencies, after all, build is a static JS.
+#
+# more: https://docs.docker.com/develop/develop-images/multistage-build/
+#
+# The nginx config
+# https://github.com/h5bp/server-configs-nginx/blob/master/nginx.conf
+# was one suggested in Google PageSpeed documentation:
+# https://developers.google.com/speed/docs/insights/EnableCompression
+# and simplified to match single server scenario (no sites-enabled).
+
+FROM node:8.11.1 as builder
+COPY . /code
+RUN cd /code && yarn install && yarn build
+
+FROM nginx as production
+COPY --from=builder /code/build /dist
+ADD nginx.conf /etc/nginx/nginx.conf
+ADD mime.types /etc/nginx/mime.types
+EXPOSE 80
+RUN mkdir -p /var/log/nginx
+VOLUME /var/log/nginx
+# http://pjdietz.com/2016/08/28/nginx-in-docker-without-root.html
+#RUN touch /var/run/nginx.pid && \
+#  chown -R www-data:www-data /var/run/nginx.pid && \
+#  chown -R www-data:www-data /var/cache/nginx && \
+#  chown -R www-data:www-data /var/cache/nginx && \
+#  chown -R www-data:www-data /var/log/nginx && \
+#
+#USER www-data
+

@@ -1,0 +1,35 @@
+version: '3.6'
+
+services:
+  frontend:
+    build:
+      context: frontend
+      dockerfile: ../frontend.docker
+    ports:
+      - 3000:80
+  backend:
+    build:
+      context: backend
+      dockerfile: ../backend.docker
+    ports:
+      - 8000:8000
+    environment:
+      DATABASE_URL: 'postgres://not_secret:not_secret@db/not_secret'
+      DJANGO_MANAGEPY_COLLECTSTATIC: 'on'
+      DJANGO_MANAGEPY_MIGRATE: 'on'
+      DJANGO_MANAGEPY_COMPILEMESSAGES: 'off'
+      # this is only here because I messed frontend in silly way
+      # when there's no items, the app gets stuck, and it's late
+      # this will flush the database, each time the container is started
+      DJANGO_MANAGEPY_POPULATE: 'on'
+  db:
+    image: postgres:10.3
+    restart: always
+    environment:
+      POSTGRES_DB: not_secret
+      POSTGRES_USER: not_secret
+      POSTGRES_PASSWORD: not_secret
+    volumes:
+      - ./srv/postgres:/var/lib/postgresql/data
+    expose:
+      - 5432

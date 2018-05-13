@@ -1,0 +1,55 @@
+# I have split the build and run phase to
+# to use pip wheel cache
+FROM python:3.6.5-alpine3.7 as builder
+# postgresql-dev
+#   Error: pg_config executable not found.
+# build-base
+#   error: command 'gcc' failed with exit status 1
+# gettext
+#   for compilemessages
+# linux_headers
+#   ./uwsgi.h:238:26: fatal error: linux/limits.h: No such file or directory
+# postgresql-client
+#   /docker-entrypoint.sh: line 1: psql: not found
+RUN apk add --update \
+    postgresql-dev \
+    build-base \
+    gettext \
+    linux-headers
+COPY requirements.txt /requirements.txt
+RUN pip install -r requirements.txt
+
+FROM python:3.6.5-alpine3.7 as production
+COPY --from=builder /root/.cache /root/.cache
+COPY --from=builder /requirements.txt /requirements.txt
+RUN apk add --update \
+     libpq postgresql-client gettext vim
+RUN mkdir -p /var/media /var/static
+RUN chown -R 1000:2000 /var/media /var/static
+#COPY backend.entrypoint /backend.entrypoint
+#RUN chmod +x /backend.entrypoint
+#ENTRYPOINT ["/backend.entrypoint"]
+RUN pip install -r /requirements.txt
+RUN mkdir -p /code/
+WORKDIR /code/
+COPY . /code/
+# Convenience for files created in volumes mounted by compose
+# I don't care that they will be modifiable outside the container
+RUN umask 0001
+EXPOSE 8000
+ENV DJANGO_SETTINGS_MODULE=backend.settings.production
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+ENTRYPOINT ["/docker-entrypoint.sh"]
+# https://stackoverflow.com/a/35718679/1472229
+CMD /usr/local/bin/uwsgi \
+    --plugin /usr/lib/uwsgi/python3_plugin.so --plugins-list \
+    --harakiri=120 \
+    --static-map /static=/var/static \
+    --static-map /media/pictures=/var/media/pictures \
+    --file /code/backend/wsgi.py \
+    --http-socket ":8000" \
+    --workers 2 \
+    --threads 8 \
+    --uid 1001 \
+    --gid 2001 \
+    --buffer-size 16384

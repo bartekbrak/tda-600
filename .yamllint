@@ -1,0 +1,15 @@
+extends: default
+
+rules:
+  line-length: disable
+  document-start: disable
+  empty-lines:
+    level: warning
+  indentation:
+    level: warning
+  trailing-spaces:
+    level: warning
+  colons: disable
+
+ignore: |
+  ./srv/

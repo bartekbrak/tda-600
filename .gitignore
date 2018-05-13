@@ -1,0 +1,6 @@
+*.pyc
+node_modules
+*.log
+*.sqlite3
+/srv
+.env

@@ -1,0 +1,24 @@
+#/bin/bash
+echo 'This program is idempotent, you can run it many times to same effect.'
+
+echo
+echo '--- init hooks ---'
+rm .git/hooks/pre-commit
+ln -s ../../pre-commit.hook.py .git/hooks/pre-commit
+
+echo Installed symlinks:
+find .git -type l -exec echo -en "\t{} -> " \; -exec readlink {} \;
+
+echo '--- install Ubuntu dependencies ---'
+# heroku client
+command -v heroku >/dev/null 2>&1 || { curl https://cli-assets.heroku.com/install-ubuntu.sh | sh; }
+
+echo '--- Install python packages---'
+test -z $VIRTUAL_ENV && {
+    echo you are not inside a virtualenv, create one first
+} || {
+    pip install -U pip
+    pip install -r backend/requirements.txt
+    pip install -r backend/requirements_dev.txt
+}
+touch .env
