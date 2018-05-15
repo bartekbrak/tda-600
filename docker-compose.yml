@@ -18,10 +18,7 @@ services:
       DJANGO_MANAGEPY_COLLECTSTATIC: 'on'
       DJANGO_MANAGEPY_MIGRATE: 'on'
       DJANGO_MANAGEPY_COMPILEMESSAGES: 'off'
-      # this is only here because I messed frontend in silly way
-      # when there's no items, the app gets stuck, and it's late
-      # this will flush the database, each time the container is started
-      DJANGO_MANAGEPY_POPULATE: 'on'
+      DJANGO_MANAGEPY_POPULATE: 'off'
   db:
     image: postgres:10.3
     restart: always
