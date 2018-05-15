@@ -24,6 +24,7 @@ class App extends Component {
         this.setState(prevState => ({
           items: [...prevState.items, result.data.item]
         }))
+        window.scrollBy(0, 100)
       })
   }
   deleteItem = id => {

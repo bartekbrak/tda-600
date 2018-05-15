@@ -5,7 +5,7 @@ class CreateItem extends Component {
   state = {
     title: '',
     desc: '',
-    tried: false
+    submitted: false
   }
 
   handleChange = e => {
@@ -14,10 +14,10 @@ class CreateItem extends Component {
   }
   handleKeyPress = e => {
     if (e.key === 'Enter') {
-      this.setState({ tried: true })
+      this.setState({ submitted: true })
       if (this.state.title && this.state.desc) {
         this.props.addItem(this)
-        this.setState({ tried: false })
+        this.setState({ submitted: false })
       }
     }
   }
@@ -31,13 +31,14 @@ class CreateItem extends Component {
             name="title"
             onChange={this.handleChange}
             onKeyPress={this.handleKeyPress}
-            className={!this.state.title && this.state.tried ? 'empty' : ''}
+            className={!this.state.title && this.state.submitted ? 'empty' : ''}
             type="text"
             placeholder="title"
             value={this.state.title}
             required
             pattern=".{3,}"
             autoFocus
+            tabIndex="1"
           />
         </td>
         <td>
@@ -45,12 +46,13 @@ class CreateItem extends Component {
             name="desc"
             onChange={this.handleChange}
             onKeyPress={this.handleKeyPress}
-            className={!this.state.desc && this.state.tried ? 'empty' : ''}
+            className={!this.state.desc && this.state.submitted ? 'empty' : ''}
             value={this.state.desc}
             required
             pattern=".{3,}"
             type="text"
             placeholder="Add new task description here and press Enter."
+            tabIndex="2"
           />
         </td>
         <td>-</td>
