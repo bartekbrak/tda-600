@@ -34,15 +34,15 @@ class App extends Component {
       }))
     })
   }
-  changeStatus = (id, status) => {
+  changeStatus = (id, key, value) => {
     let items = this.state.items
     let objIndex = this.state.items.findIndex(obj => obj.id === id)
-    items[objIndex].status = status
+    items[objIndex][key] = value
     this.setState({ items: items })
   }
-  patchItem = (id, status) => {
-    axios.patch(ITEMS + id, { status: status }).then(result => {
-      this.changeStatus(id, status)
+  patchItem = (id, key, value) => {
+    axios.patch(ITEMS + id, { [key]: value }).then(result => {
+      this.changeStatus(id, key, value)
     })
   }
 
@@ -64,7 +64,12 @@ class App extends Component {
         <header className="App-header">
           <img src={logo} className="App-logo" alt="" />
           <h1 className="App-title">Welcome to tda-600.</h1>
-          <div>click on ID to deleteItem, click on status to complete</div>
+          <div>
+            click on <b>id</b> to deleteItem, click on <b>status</b> to
+            complete,<br />
+            click on either <b>title</b> or <b>description</b> to edit<br />
+            or on the last row to add new entry
+          </div>
         </header>
 
         <List

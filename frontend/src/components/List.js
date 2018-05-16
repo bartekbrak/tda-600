@@ -24,7 +24,7 @@ const List = props => {
         <tr>
           <th>id</th>
           <th>title</th>
-          <th>desc</th>
+          <th>description</th>
           <th>status</th>
         </tr>
       </thead>

@@ -1,33 +1,62 @@
-import React from 'react'
+import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import { debounce } from 'throttle-debounce'
 
-const Row = props => {
-  const editDesc = () => {}
-  const deleteItem = () => {
-    props.deleteItem(props.id)
+export default class Row extends Component {
+  state = {
+    lastHTML: undefined
   }
-  const completeItem = () => {
-    props.patchItem(props.id, 'done')
+  deleteItem = () => {
+    this.props.deleteItem(this.props.id)
   }
-  const undoItem = () => {
-    props.patchItem(props.id, 'pending')
+  completeItem = () => {
+    this.props.patchItem(this.props.id, 'status', 'done')
   }
-
-  return (
-    <tr id={props.id}>
-      <td className="delete" onClick={deleteItem}>
-        {props.id}
-      </td>
-      <td>{props.title}</td>
-      <td onClick={editDesc}>{props.desc}</td>
-      <td
-        className={props.status === 'pending' ? 'complete' : 'undo'}
-        onClick={props.status === 'pending' ? completeItem : undoItem}
-      >
-        {props.status}
-      </td>
-    </tr>
-  )
+  undoItem = () => {
+    this.props.patchItem(this.props.id, 'status', 'pending')
+  }
+  // https://stackoverflow.com/a/22678516/1472229
+  debounceOnChange = debounce(1000, (target, id, key, value) => {
+    // TODO: when empty, field can't be sent but this is not indicated
+    if (target && target.innerHTML) {
+      let newHTML = target.innerHTML
+      if (newHTML !== this.state.lastHTML) {
+        this.props.patchItem(id, key, value)
+        this.setState({ lastHTML: newHTML })
+      }
+    }
+  })
+  onChange = e => {
+    this.debounceOnChange(
+      e.target,
+      this.props.id,
+      e.target.attributes.getNamedItem('data-name').value,
+      e.target.innerHTML
+    )
+  }
+  render() {
+    return (
+      <tr>
+        <td className="delete" onClick={this.deleteItem}>
+          {this.props.id}
+        </td>
+        <td contentEditable onInput={this.onChange} data-name="title">
+          {this.props.title}
+        </td>
+        <td contentEditable onInput={this.onChange} data-name="desc">
+          {this.props.desc}
+        </td>
+        <td
+          className={this.props.status === 'pending' ? 'complete' : 'undo'}
+          onClick={
+            this.props.status === 'pending' ? this.completeItem : this.undoItem
+          }
+        >
+          {this.props.status}
+        </td>
+      </tr>
+    )
+  }
 }
 
 Row.propTypes = {
@@ -38,4 +67,3 @@ Row.propTypes = {
   status: PropTypes.string,
   id: PropTypes.number
 }
-export default Row
