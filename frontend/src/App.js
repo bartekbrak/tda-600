@@ -15,8 +15,7 @@ class App extends Component {
     api
       .post(ITEMS, {
         desc: child.state.desc,
-        title: child.state.title,
-        status: 'pending'
+        title: child.state.title
       })
       .then(result => {
         child.setState({ title: '', desc: '' })

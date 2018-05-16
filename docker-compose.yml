@@ -5,6 +5,8 @@ services:
     build:
       context: frontend
       dockerfile: ../frontend.docker
+      args:
+        REACT_APP_BACKEND_HOST: http://backend_CHANGE_THIS.com
     ports:
       - 3000:80
   backend:
@@ -19,6 +21,7 @@ services:
       DJANGO_MANAGEPY_MIGRATE: 'on'
       DJANGO_MANAGEPY_COMPILEMESSAGES: 'off'
       DJANGO_MANAGEPY_POPULATE: 'off'
+      CORS_ORIGIN_WHITELIST: http://front_CHANGE_THIS.com
   db:
     image: postgres:10.3
     restart: always

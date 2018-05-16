@@ -12,7 +12,8 @@ class Item(models.Model):
         choices=(
             (ITEM_STATUS.PENDING, _('pending')),
             (ITEM_STATUS.DONE, _('done')),
-        )
+        ),
+        default=ITEM_STATUS.PENDING
     )
     created_at = models.DateTimeField(auto_now_add=True, db_index=True, editable=False)
     modified = models.DateTimeField(auto_now=True)

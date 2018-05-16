@@ -12,35 +12,38 @@ abilities.
 
 Since this is developed in my free time, I will take this opportunity to learn
 something new and use React, which I have never used before. I will follow parts
- of [react tutorial](https://reactjs.org/tutorial/tutorial.html) but also check
-  against http://todomvc.com/ when confused taking care not to use too much of
-  their code.
+of [react tutorial](https://reactjs.org/tutorial/tutorial.html) but also check
+against http://todomvc.com/ when confused taking care not to use too much of
+their code.
 
----
+# deploy
 
-Progress update:
+The deploy to cloud should be straightforward to those familiar with docker[compose].
+I planned to add pre-orchestration with Ansible but time is running out on me.
 
-    # deploy
-    - docker-compose and basic dockerfiles finished, although containers run on
-      root, some people object to that (heroku won't run such containers for
-      example)
-    - I planned nginx + docker-gen + docker-letsencrypt-nginx-proxy-companion
-      but did not start
-    - Ansible deploy not started
+Note two env variables:
+- CORS_ORIGIN_WHITELIST - whom should backend welcome
+- REACT_APP_BACKEND_HOST - where is backend located
 
-    # frontend
-    - there are bugs in the frontend preventing containerized run
-    - reasonably finished, learned quite some basic react, the code is rather
-      horrible but not dumb
-    - editing of a task not finished, the code was not DRYed
-    - no tests
+For the domains front1.com, front2.com, backend.com,
+one should provide these values in docker-compose.yml:
 
-    # backend
-    - models and API work, they are very basic, this is a simple app
-    - no tests, no login, no security, minimalism
+    ...
+    services:
+      frontend:
+        build:
 
+        args:
+          REACT_APP_BACKEND_HOST: http://backend_CHANGE_THIS.com
+    ...
+      backend:
+        environment:
+          CORS_ORIGIN_WHITELIST: http://front1.com,http://front2.com
 
-# test containers locally
+Two frontends are rather strange, this here is to demonstrate
+the relationships and capabilities.
+
+# test containers manually locally
 
     pip install docker-compose
     docker-compose up -d
@@ -65,3 +68,8 @@ Progress update:
     cd ../frontend
     yarn install
     yarn start
+
+# run tests
+
+pip install -r backend/requirements_dev.txt
+pytest
