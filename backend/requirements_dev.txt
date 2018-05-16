@@ -30,3 +30,4 @@ colored-traceback==0.3.0
 httpie
 docker-compose
 binaryornot==0.4.4
+django-cors-headers==2.2.0

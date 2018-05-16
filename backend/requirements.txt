@@ -14,3 +14,4 @@ djangorestframework-jwt==1.11.0
 djoser==1.1.5
 dynamic-rest==1.8.1
 dry-rest-permissions==0.1.10
+django-cors-headers==2.2.0

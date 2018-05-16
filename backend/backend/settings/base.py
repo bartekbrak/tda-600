@@ -6,13 +6,13 @@ repo = this - 4
 backend = this - 3
 whale = this - 2
 env = environ.Env(DEBUG=(bool, False), )
-# environ.Env.read_env(repo('.env'))
+environ.Env.read_env()
 SITE_ROOT = whale()
 
+ALLOWED_HOSTS = CORS_ORIGIN_WHITELIST = env('CORS_ORIGIN_WHITELIST', default='localhost').split(',')
 SECRET_KEY = 'q+xd2#&_xbdng5dk#!9ymb9@hi1)m1uswp&rxbn3j36a+tc-mb'
 DEBUG = False
 
-ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     # 'django.contrib.admin',
     'django.contrib.auth',
@@ -23,11 +23,14 @@ INSTALLED_APPS = [
     'rest_framework',
     'dynamic_rest',
     'core',
+    'corsheaders',
 ]
+CORS_ORIGIN_ALLOW_ALL = True
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
